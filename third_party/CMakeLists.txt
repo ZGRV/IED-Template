@@ -1,0 +1,6 @@
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
+set(BUILD_EXAMPLES ON CACHE BOOL "Build the examples")
+set(CONFIG_IEC61850_SERVICE_TRACKING "Enable service" OFF)
+add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/libiec61850 EXCLUDE_FROM_ALL)
+get_directory_property(LIBIEC_INCLUDES DIRECTORY "${CMAKE_SOURCE_DIR}/third_party/libiec61850" INCLUDE_DIRECTORIES)
