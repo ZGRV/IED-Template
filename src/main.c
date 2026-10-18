@@ -52,7 +52,7 @@ main(int argc, char **argv)
     GoosePublisher publisher = GoosePublisher_create(&gooseCommParameters, interface);
 
     if (publisher) {
-        GoosePublisher_setGoCbRef(publisher, "simpleIOGenericIO/LLN0$GO$gcbAnalogValues");
+        GoosePublisher_setGoCbRef(publisher, "Baryshev/LLN0$GO$gcbBaryshev"); // GoCbRef — контроллер GOOSE студента Барышева
         GoosePublisher_setConfRev(publisher, 1);
         GoosePublisher_setDataSetRef(publisher, "simpleIOGenericIO/LLN0$AnalogValues");
         GoosePublisher_setTimeAllowedToLive(publisher, 500);
