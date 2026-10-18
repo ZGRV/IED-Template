@@ -8,8 +8,7 @@
 ├── src/main.c                  # точка входа (заполняется в рамках заданий)
 ├── include/                    # заголовочные файлы проекта
 ├── cmake/toolchain.cmake       # тулчейн кросс-компиляции (aarch64-buildroot, sysroot /opt/arm_sysroot)
-├── third_party/libiec61850/    # сабмодуль: стек IEC 61850 + примеры (goose_publisher, goose_observer, ...)
-└── docs/task-01-initial.md     # учебное задание 1: форк, сборка, локальный запуск GOOSE-публикатора
+└── third_party/libiec61850/    # сабмодуль: стек IEC 61850 + примеры (goose_publisher, goose_observer, ...)
 ```
 
 ## Требования
