@@ -1,5 +1,9 @@
 {
     "files.associations": {
         "iostream": "cpp"
-    }
+    },
+    // IntelliSense берёт флаги и include-пути (в т.ч. libiec61850) из последней сборки.
+    // Если работаете с кросс-сборкой, укажите build-aarch64/compile_commands.json.
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "C_Cpp.cStandard": "c11"
 }

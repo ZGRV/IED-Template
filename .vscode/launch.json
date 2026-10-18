@@ -1,0 +1,57 @@
+{
+    // Конфигурации отладки IED-Template.
+    // 1) "Debug (host x86_64)"            — локальная отладка на компьютере.
+    // 2) "Debug (target aarch64, gdbserver)" — отладка на целевой ARM-плате.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // Локальная отладка: собирает проект под x86_64 и запускает с gdb.
+            // ВНИМАНИЕ: публикация GOOSE требует прав root (raw-сокеты).
+            // Для реальной отправки GOOSE запустите VS Code от root
+            // (sudo code) либо предварительно выдайте CAP_NET_RAW.
+            "name": "Debug (host x86_64)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/ied_exe",
+            "args": ["eth0"], // имя этернет-интерфейса, на котором публикуется GOOSE
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "Build (host x86_64)",
+            "setupCommands": [
+                {
+                    "description": "Включить pretty-printing в gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            // Отладка на целевой ARM-плате через gdbserver.
+            // Подготовка (сделать ОДИН РАЗ под свою плату):
+            //   1) в .vscode/gdb-remote.gdb — IP платы и порт (по умолчанию :1234);
+            //   2) в задаче "Deploy & gdbserver (target)" в tasks.json — IP платы.
+            // При запуске: задача скопирует build-aarch64/ied_exe на плату,
+            // поднимет gdbserver, а кросс-gdb подключится и остановится на entry.
+            "name": "Debug (target aarch64, gdbserver)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build-aarch64/ied_exe", // только для символов
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/opt/arm_sysroot/bin/aarch64-buildroot-linux-gnu-gdb",
+            "initFile": "${workspaceFolder}/.vscode/gdb-remote.gdb",
+            "preLaunchTask": "Deploy & gdbserver (target)",
+            "setupCommands": [
+                {
+                    "description": "Включить pretty-printing в gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

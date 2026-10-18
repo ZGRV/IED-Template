@@ -1,0 +1,50 @@
+{
+    // Задачи сборки и развёртывания проекта IED-Template.
+    // Локальная отладка:  "Build (host x86_64)"  -> build/ied_exe
+    // Отладка на плате:   "Build (target aarch64)" + "Deploy & gdbserver (target)"
+    "version": "2.0.0",
+    "tasks": [
+        {
+            // Сборка под локальный хост (x86_64) с отладочной информацией (-g).
+            // Это задача по умолчанию: F7 / Ctrl+Shift+B.
+            "label": "Build (host x86_64)",
+            "type": "shell",
+            "command": "cmake -B build -DCMAKE_BUILD_TYPE=Debug && cmake --build build -j",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "CMake configure + build для локальной отладки (x86_64, Debug)"
+        },
+        {
+            // Кросс-сборка под целевую ARM-плату (aarch64, toolchain из cmake/toolchain.cmake).
+            // Результат: build-aarch64/ied_exe — исполняемый файл для платы.
+            "label": "Build (target aarch64)",
+            "type": "shell",
+            "command": "cmake -B build-aarch64 -DCMAKE_BUILD_TYPE=Debug -DCROSS_COMPILE=ON && cmake --build build-aarch64 -j",
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Кросс-компиляция под aarch64 (sysroot /opt/arm_sysroot), Debug"
+        },
+        {
+            // Загрузка бинарника на плату и запуск gdbserver.
+            // ВАЖНО: замените 192.168.1.50 на IP-адрес вашей платы (в двух местах:
+            // scp и ssh). Плата должна быть в одной сети с хостом, доступ по ssh от root.
+            "label": "Deploy & gdbserver (target)",
+            "type": "shell",
+            "command": "scp build-aarch64/ied_exe root@192.168.1.50:/root/ && ssh root@192.168.1.50 \"pkill -f 'gdbserver 0.0.0.0:1234' ; nohup gdbserver 0.0.0.0:1234 /root/ied_exe eth0 >/tmp/gdbserver.log 2>&1 & sleep 1; echo 'gdbserver started on 192.168.1.50:1234'",
+            "problemMatcher": [],
+            "detail": "scp бинарника на плату + запуск gdbserver :1234 (preLaunchTask для удалённой отладки)"
+        },
+        {
+            // Проверка aarch64-бинарника БЕЗ реального железа: QEMU user-mode под кросс-gdb.
+            // Запускается в терминале — управляйте классическими командами gdb (b, c, n, s, p).
+            "label": "QEMU + cross-gdb (terminal)",
+            "type": "shell",
+            "command": "/opt/arm_sysroot/bin/aarch64-buildroot-linux-gnu-gdb -ex \"target remote | qemu-aarch64 -L /opt/arm_sysroot/aarch64-buildroot-linux-gnu/sysroot -g stdio ./build-aarch64/ied_exe eth0\"",
+            "problemMatcher": [],
+            "detail": "Эмуляция build-aarch64/ied_exe в QEMU под aarch64-gdb (нужна кросс-сборка)"
+        }
+    ]
+}
